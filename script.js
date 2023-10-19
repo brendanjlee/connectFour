@@ -173,6 +173,58 @@ function GameController(
     playRound,
     switchPlayer,
     getBoard,
-    checkBoard
+    checkBoard,
+    getActivePlayer
   }
 }
+
+function ScreenController() {
+  const game = GameController();
+
+  // dom elements
+  const turnDiv = document.querySelector('.turn');
+  const boardDiv = document.querySelector('.board');
+
+  const updateScreen = () => {
+    // clear board
+    boardDiv.textContent = "";
+
+    // get game state
+    const board = game.getBoard();
+    const activePlayer = game.getActivePlayer();
+
+    // Displayer player turn
+    turnDiv.textContent = `${activePlayer.name}'s turn`;
+
+    renderBoard(board);
+  }
+
+  // creates the button elements for the board
+  const renderBoard = (board) => {
+    board.forEach((row) => {
+      row.forEach((cell, idx) => {
+        const cellBtn = document.createElement('button');
+        cellBtn.classList.add('cell');
+
+        // add data attribute for identificaiton
+        cellBtn.dataset.column = idx;
+        cellBtn.textContent = cell.getValue();
+        boardDiv.appendChild(cellBtn);
+      });
+    });
+  }
+
+  function clickHandlerBoard(e) {
+    const currCol = e.target.dataset.column;
+
+    if (!currCol) return;
+
+    game.playRound(currCol);
+    updateScreen();
+  }
+
+  boardDiv.addEventListener("click", clickHandlerBoard);
+  updateScreen();
+}
+
+ScreenController();
